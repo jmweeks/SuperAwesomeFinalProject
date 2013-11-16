@@ -4806,7 +4806,7 @@
       <Focus>0</Focus>
       <ColumnNumber>4</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>436</TopLine>
+      <TopLine>437</TopLine>
       <CurrentLine>446</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\LIS302DL\src\stm32f4_discovery_lis302dl.c</PathWithFileName>
@@ -4822,7 +4822,7 @@
       <Focus>0</Focus>
       <ColumnNumber>24</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>176</TopLine>
+      <TopLine>371</TopLine>
       <CurrentLine>181</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\LIS302DL\inc\stm32f4_discovery_lis302dl.h</PathWithFileName>
@@ -4860,10 +4860,10 @@
       <FileType>5</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>19</ColumnNumber>
+      <ColumnNumber>8</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>202</TopLine>
-      <CurrentLine>203</CurrentLine>
+      <TopLine>1</TopLine>
+      <CurrentLine>37</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\CC2500\inc\CC2500.h</PathWithFileName>
       <FilenameWithoutPath>CC2500.h</FilenameWithoutPath>
