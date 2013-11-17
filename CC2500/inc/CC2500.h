@@ -46,7 +46,7 @@
 #define CC2500_SPI_MOSI_SOURCE           GPIO_PinSource7
 #define CC2500_SPI_MOSI_AF               GPIO_AF_SPI1
 
-#define CC2500_SPI_CS_PIN                GPIO_PIN_4
+#define CC2500_SPI_CS_PIN                GPIO_Pin_4
 #define CC2500_SPI_CS_GPIO_PORT          GPIOA
 #define CC2500_SPI_CS_GPIO_CLK           RCC_AHB1Periph_GPIOA  
 
@@ -384,5 +384,35 @@ Bit 		Field Name 			Description
 
 #define CC2500_CFG_PKTLEN     0x0A // Packet Length of 10bytes (0xFF)
 
+
+/******************************************************************************/
+/*************************** END REGISTER CONFIGURATION  **************************/
+/******************************************************************************/
+
+/** @defgroup CC2500_Exported_Macros
+  * @{
+  */
+#define CC2500_CS_LOW()       GPIO_ResetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_CS_PIN)
+#define CC2500_CS_HIGH()      GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_CS_PIN)
+
+
+
+/** @defgroup STM32F4_DISCOVERY_CC2500_Exported_Functions
+  * @{
+  */ 
+void CC2500_Init();
+void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
+void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
+	
+	/* USER Callbacks: This is function for which prototype only is declared in
+   MEMS accelerometre driver and that should be implemented into user applicaiton. */  
+/* CC2500_TIMEOUT_UserCallback() function is called whenever a timeout condition 
+   occure during communication (waiting transmit data register empty flag(TXE)
+   or waiting receive data register is not empty flag (RXNE)).
+   You can use the default timeout callback implementation by uncommenting the 
+   define USE_DEFAULT_TIMEOUT_CALLBACK in stm32f4_discovery_lis302dl.h file.
+   Typically the user implementation of this callback should reset MEMS peripheral
+   and re-initialize communication or in worst case reset all the application. */
+uint32_t CC2500_TIMEOUT_UserCallback(void);
 
 #endif

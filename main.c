@@ -8,6 +8,8 @@
 #include "project_servo.h"
 #include "project_filter.h"
 #include "project_accelerometer.h"
+#include "CC2500.h"
+
 
 /*!
  @brief Thread to perform menial tasks such as switching LEDs
@@ -21,10 +23,20 @@ static struct Orientation orientation;
 //! Thread structure for above thread
 osThreadDef(thread, osPriorityNormal, 1, 0);
 
+uint8_t dummyData;
+uint8_t dummyAddr;
+
+
 /*!
  @brief Program entry point
  */
 int main (void) {
+	
+	CC2500_Init();
+	dummyData = 0;
+	dummyAddr = 0x31;
+	CC2500_Read(&dummyData, dummyAddr, 1);
+
 	
 	init_TIM4(1 / SERVO_DUTY_CYCLE_STEP, SERVO_FREQUENCY);
 	//init_TIM4(ACCELEROMETER_PWM_STEPS, ACCELEROMETER_PWM_FREQUENCY);
@@ -40,7 +52,10 @@ int main (void) {
 
 	// The below doesn't really need to be in a loop
 	while(1){
-		osDelay(osWaitForever);
+		
+
+		
+		//osDelay(osWaitForever);
 	}
 }
 
