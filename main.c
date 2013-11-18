@@ -25,6 +25,7 @@ osThreadDef(thread, osPriorityNormal, 1, 0);
 
 uint8_t dummyData;
 uint8_t dummyAddr;
+uint8_t dummyWrite;
 
 
 /*!
@@ -33,22 +34,27 @@ uint8_t dummyAddr;
 int main (void) {
 	
 	CC2500_Init();
-	dummyData = 0;
-	dummyAddr = 0x31;
+	dummyData = 4;
+	dummyAddr = CC2500_REG_MDMCFG3;
+	dummyWrite = CC2500_CFG_MDMCFG3;
+	CC2500_Read(&dummyData, 0x30, 1);//send reset strobe
+	CC2500_Read(&dummyData, 0x30, 6); //set burst byte to read status reg expected: 0x03 for addr 0x31 and (0x80 for 0x30)
+	CC2500_Write(&dummyWrite, dummyAddr,1);
+	dummyAddr = CC2500_REG_MDMCFG3;
 	CC2500_Read(&dummyData, dummyAddr, 1);
-
 	
-	init_TIM4(1 / SERVO_DUTY_CYCLE_STEP, SERVO_FREQUENCY);
-	//init_TIM4(ACCELEROMETER_PWM_STEPS, ACCELEROMETER_PWM_FREQUENCY);
-	init_LEDS_PWM();
-	init_servo(&servo, 3);
-	init_orientation(&orientation);
-	init_accelerometer();
 	
-	osThreadId tid_thread;
+//	init_TIM4(1 / SERVO_DUTY_CYCLE_STEP, SERVO_FREQUENCY);
+//	//init_TIM4(ACCELEROMETER_PWM_STEPS, ACCELEROMETER_PWM_FREQUENCY);
+//	init_LEDS_PWM();
+//	init_servo(&servo, 3);
+//	init_orientation(&orientation);
+//	init_accelerometer();
+//	
+//	osThreadId tid_thread;
 
-	// Start thread
-	tid_thread = osThreadCreate(osThread(thread), NULL);
+//	// Start thread
+//	tid_thread = osThreadCreate(osThread(thread), NULL);
 
 	// The below doesn't really need to be in a loop
 	while(1){

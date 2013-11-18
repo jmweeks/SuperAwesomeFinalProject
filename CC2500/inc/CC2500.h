@@ -400,7 +400,7 @@ Bit 		Field Name 			Description
 /** @defgroup STM32F4_DISCOVERY_CC2500_Exported_Functions
   * @{
   */ 
-void CC2500_Init();
+void CC2500_Init(void);
 void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
 	

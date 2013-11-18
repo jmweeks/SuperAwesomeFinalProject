@@ -84,8 +84,20 @@ void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
 {  
   if(NumByteToRead > 0x01)
   {
+		//differentiate command strobes from status registers using bust mode
+		//ie. must use burst mode to read status registers however chip will
+		//only return single register (single byte access for status registers)
+		//as a result, we check to see if the address is in the status register range,
+		//if so, keep the burst bit so the chip interprets the right instruction,
+		//but modify NumByteToRead to only expect single byte return
+		if((ReadAddr >= 0x30) && (ReadAddr <= 0x3D)){  //address limits for status registers
+			NumByteToRead = 0x01;
+		}
+		
 		//0 is single op, 1 is burst
     ReadAddr |= (uint8_t)(READWRITE_CMD | MULTIPLEBYTE_CMD);
+		
+
   }
   else
   {
@@ -157,32 +169,34 @@ static void CC2500_LowLevel_Init(void)
   /* SPI MISO pin configuration */
   GPIO_InitStructure.GPIO_Pin = CC2500_SPI_MISO_PIN;
   GPIO_Init(CC2500_SPI_MISO_GPIO_PORT, &GPIO_InitStructure);
+	
+	  /* Configure GPIO PIN for Lis Chip select */
+  GPIO_InitStructure.GPIO_Pin = CC2500_SPI_CS_PIN;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	//GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
+  GPIO_Init(CC2500_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
+
+  /* Deselect : Chip Select high */
+  GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_CS_PIN);
 
   /* SPI configuration -------------------------------------------------------*/
-  SPI_I2S_DeInit(CC2500_SPI);
+ // SPI_I2S_DeInit(CC2500_SPI);
   SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
   SPI_InitStructure.SPI_DataSize = SPI_DataSize_8b;
   SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;
   SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;
   SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;
-  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_4;
+  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_128;
   SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;
-  SPI_InitStructure.SPI_CRCPolynomial = 7;
+ // SPI_InitStructure.SPI_CRCPolynomial = 7;
   SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
   SPI_Init(CC2500_SPI, &SPI_InitStructure);
 
   /* Enable SPI1  */
   SPI_Cmd(CC2500_SPI, ENABLE);
 
-  /* Configure GPIO PIN for Lis Chip select */
-  GPIO_InitStructure.GPIO_Pin = CC2500_SPI_CS_PIN;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(CC2500_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
-
-  /* Deselect : Chip Select high */
-  GPIO_SetBits(CC2500_SPI_CS_GPIO_PORT, CC2500_SPI_CS_PIN);
   
   /* Configure GPIO PINs to detect Interrupts (Not applicable in the case of CC2500 */
 /*  GPIO_InitStructure.GPIO_Pin = LIS302DL_SPI_INT1_PIN;
@@ -213,6 +227,8 @@ static uint8_t CC2500_SendByte(uint8_t byte)
   
   /* Send a Byte through the SPI peripheral */
   SPI_I2S_SendData(CC2500_SPI, byte);
+	
+	while(SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_TXE) == RESET); // wait until transmit complete
   
   /* Wait to receive a Byte */
   CC2500Timeout = CC2500_FLAG_TIMEOUT;
@@ -220,7 +236,7 @@ static uint8_t CC2500_SendByte(uint8_t byte)
   {
     if((CC2500Timeout--) == 0) return CC2500_TIMEOUT_UserCallback();
   }
-  
+  while(SPI_I2S_GetFlagStatus(CC2500_SPI, SPI_I2S_FLAG_BSY) == SET); // wait until not busy
   /* Return the Byte read from the SPI bus */
   return (uint8_t)SPI_I2S_ReceiveData(CC2500_SPI);
 }
