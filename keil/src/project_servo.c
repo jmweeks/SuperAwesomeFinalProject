@@ -1,10 +1,16 @@
 #include "stm32f4xx.h"
+#include "cmsis_os.h"
 
 #include "project_servo.h"
 
 void init_servo(struct Servo *servo, uint32_t CCR) {
 	servo->CCR = CCR;
 	servo->position = 0;
+	servo->realPosition = 0;
+	osThreadDef(servoThread, osPriorityNormal, 1, 0);
+	servo->threadID = osThreadCreate(osThread(servoThread), servo);
+	osMutexDef(servoMutex);
+	servo->mutexID=osMutexCreate(osMutex(servoMutex));
 }
 
 void update_position(struct Servo *servo, uint32_t position) {
@@ -22,5 +28,23 @@ void update_position(struct Servo *servo, uint32_t position) {
 		default:
 			TIM4->CCR4 = CCR_value;
 	}
-	servo->position = position;
+	servo->realPosition = position;
+}
+
+void servoThread (void const *argument) {
+	struct Servo *servo;
+	servo = (struct Servo *)argument;
+	while(1) {
+		osMutexWait(servo->mutexID, osWaitForever);
+		if (servo->position != servo->realPosition) {
+			if (servo->position > servo->realPosition) {
+				servo->realPosition++;
+			} else {
+				servo->realPosition--;
+			}
+			update_position(servo, servo->realPosition);
+		}
+		osMutexRelease(servo->mutexID);
+		osDelay(1000 / SERVO_DEG_PER_SECOND);
+	}
 }
