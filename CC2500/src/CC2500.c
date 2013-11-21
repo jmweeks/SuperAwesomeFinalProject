@@ -96,7 +96,6 @@ void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
 		
 		//0 is single op, 1 is burst
     ReadAddr |= (uint8_t)(READWRITE_CMD | MULTIPLEBYTE_CMD);
-		
 
   }
   else
@@ -107,7 +106,7 @@ void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead)
   CC2500_CS_LOW();
   
   /* Send the Address of the indexed register */
-  CC2500_SendByte(ReadAddr);
+  *pBuffer = CC2500_SendByte(ReadAddr);
   
   /* Receive the data that will be read from the device (MSB First) */
   while(NumByteToRead > 0x00)
@@ -135,7 +134,7 @@ static void CC2500_LowLevel_Init(void)
   SPI_InitTypeDef  SPI_InitStructure;
 
   /* Enable the SPI periph */
-  RCC_APB2PeriphClockCmd(CC2500_SPI_CLK, ENABLE);
+  RCC_APB1PeriphClockCmd(CC2500_SPI_CLK, ENABLE);
 
   /* Enable SCK, MOSI and MISO GPIO clocks */
   RCC_AHB1PeriphClockCmd(CC2500_SPI_SCLK_GPIO_CLK | CC2500_SPI_MISO_GPIO_CLK | CC2500_SPI_MOSI_GPIO_CLK, ENABLE);
@@ -157,7 +156,7 @@ static void CC2500_LowLevel_Init(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_DOWN;
   //GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 
   /* SPI SCK pin configuration */
   GPIO_InitStructure.GPIO_Pin = CC2500_SPI_SCLK_PIN;
@@ -176,7 +175,7 @@ static void CC2500_LowLevel_Init(void)
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	//GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	//GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
   GPIO_Init(CC2500_SPI_CS_GPIO_PORT, &GPIO_InitStructure);
 
