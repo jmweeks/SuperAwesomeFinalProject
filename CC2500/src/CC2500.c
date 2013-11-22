@@ -13,6 +13,11 @@ __IO uint32_t  CC2500Timeout = CC2500_FLAG_TIMEOUT;
 /* Dummy Byte Send by the SPI Master device in order to generate the Clock to the Slave device */
 #define DUMMY_BYTE                 ((uint8_t)0x00)
 
+// RF_SETTINGS rfSettings{
+// 	
+// };
+
+
 //Local functions
 static void CC2500_LowLevel_Init(void);
 static uint8_t CC2500_SendByte(uint8_t byte);
@@ -38,6 +43,168 @@ void CC2500_Init()
 
   LIS302DL_Write(&ctrl, LIS302DL_CTRL_REG1_ADDR, 1);  */
 }
+
+
+void CC2500_config_transmitter(){
+	uint8_t tmp;
+	
+	// FSCTRL1   Frequency synthesizer control.
+	//Frequency offset = 457kHz
+	tmp = CC2500_CFG_FSCTRL1;
+	CC2500_Write(&tmp, CC2500_REG_FSCTRL1, 1);
+	
+	// FSCTRL0   Frequency synthesizer control.
+	tmp = CC2500_CFG_FSCTRL0;
+	CC2500_Write(&tmp, CC2500_REG_FSCTRL0, 1);
+	
+	// FREQ2     Frequency control word, high byte.
+	tmp = CC2500_CFG_FREQ2;
+	CC2500_Write(&tmp, CC2500_REG_FREQ2, 1);	
+	
+	// FREQ1     Frequency control word, middle byte.
+	tmp = CC2500_CFG_FREQ1;
+	CC2500_Write(&tmp, CC2500_REG_FREQ1, 1);	
+	
+	// FREQ0     Frequency control word, low byte.
+	tmp = CC2500_CFG_FREQ0;
+	CC2500_Write(&tmp, CC2500_REG_FREQ0, 1);
+	
+	// MDMCFG4   Modem configuration.
+	//BW of channel = 541.666kHz
+	tmp = CC2500_CFG_MDMCFG4;
+	CC2500_Write(&tmp, CC2500_REG_MDMCFG4, 1);
+	
+	// MDMCFG3   Modem configuration.
+	// Baud Rate = 125kb,
+	tmp = CC2500_CFG_MDMCFG3;
+	CC2500_Write(&tmp, CC2500_REG_MDMCFG3, 1);
+	
+	// MDMCFG2   Modem configuration.
+	//Disable digital DC blocking filter before demodulator, MSK modulation, 16/16 sync word bits detected
+	tmp = CC2500_CFG_MDMCFG2;
+	CC2500_Write(&tmp, CC2500_REG_MDMCFG2, 1);
+	
+	// MDMCFG1   Modem configuration.
+	tmp = CC2500_CFG_MDMCFG1;
+	CC2500_Write(&tmp, CC2500_REG_MDMCFG1, 1);
+	
+	// MDMCFG0   Modem configuration.
+	// Default Channel Spacing of 200kHz
+	tmp = CC2500_CFG_MDMCFG0;
+	CC2500_Write(&tmp, CC2500_REG_MDMCFG0, 1);
+	
+	// CHANNR    Channel number.
+	//Channel 0
+	tmp = CC2500_CFG_CHANNR;
+	CC2500_Write(&tmp, CC2500_REG_CHANNR, 1);
+	
+	// DEVIATN   Modem deviation setting (when FSK modulation is enabled).
+	// 1785kHz
+	tmp = CC2500_CFG_DEVIATN;
+	CC2500_Write(&tmp, CC2500_REG_DEVIATN, 1);
+	
+	// FREND1    Front end RX configuration.
+	tmp = CC2500_CFG_FREND1;
+	CC2500_Write(&tmp, CC2500_REG_FREND1, 1);
+	
+	// FREND0    Front end RX configuration.
+	tmp = CC2500_CFG_FREND0;
+	CC2500_Write(&tmp, CC2500_REG_FREND0, 1);
+
+	// MCSM0     Main Radio Control State Machine configuration.
+	// Automatically calibrate When going from IDLE to RX or TX (or FSTXON) check CC2500_CFG datasheet
+	tmp = CC2500_CFG_MCSM0;
+	CC2500_Write(&tmp, CC2500_REG_MCSM0, 1);
+	
+	// FOCCFG    Frequency Offset Compensation Configuration.
+	tmp = CC2500_CFG_FOCCFG;
+	CC2500_Write(&tmp, CC2500_REG_FOCCFG, 1);	
+	
+	// BSCFG     Bit synchronization Configuration.
+	tmp = CC2500_CFG_BSCFG;
+	CC2500_Write(&tmp, CC2500_REG_BSCFG, 1);	
+	
+	// AGCCTRL2  AGC control.
+	tmp = CC2500_CFG_AGCCTRL2;
+	CC2500_Write(&tmp, CC2500_REG_AGCCTRL2, 1);
+	
+	// AGCCTRL1  AGC control.
+	tmp = CC2500_CFG_AGCCTRL1;
+	CC2500_Write(&tmp, CC2500_REG_AGCCTRL1, 1);
+	
+	// AGCCTRL0  AGC control.
+	tmp = CC2500_CFG_AGCCTRL0;
+	CC2500_Write(&tmp, CC2500_REG_AGCCTRL0, 1);
+	
+	// FSCAL3    Frequency synthesizer calibration.
+	tmp = CC2500_CFG_FSCAL3;
+	CC2500_Write(&tmp, CC2500_REG_FSCAL3, 1);
+	
+	// FSCAL2    Frequency synthesizer calibration.
+	tmp = CC2500_CFG_FSCAL2;
+	CC2500_Write(&tmp, CC2500_REG_FSCAL2, 1);
+	
+	// FSCAL1    Frequency synthesizer calibration.
+	tmp = CC2500_CFG_FSCAL1;
+	CC2500_Write(&tmp, CC2500_REG_FSCAL1, 1);
+	
+	// FSCAL0    Frequency synthesizer calibration.
+	tmp = CC2500_CFG_FSCAL0;
+	CC2500_Write(&tmp, CC2500_REG_FSCAL0, 1);
+	
+	// FSTEST    Frequency synthesizer calibration.
+	tmp = CC2500_CFG_FSTEST;
+	CC2500_Write(&tmp, CC2500_REG_FSTEST, 1);
+	
+	
+	// TEST2     Various test settings.
+	tmp = CC2500_CFG_TEST2;
+	CC2500_Write(&tmp, CC2500_REG_TEST2, 1);
+	
+	// TEST1     Various test settings.
+	tmp = CC2500_CFG_TEST1;
+	CC2500_Write(&tmp, CC2500_REG_TEST1, 1);
+	
+	// TEST0     Various test settings.
+	tmp = CC2500_CFG_TEST0;
+	CC2500_Write(&tmp, CC2500_REG_TEST0, 1);
+	
+	// FIFOTHR   RXFIFO and TXFIFO thresholds.
+	tmp = CC2500_CFG_FIFOTHR;
+	CC2500_Write(&tmp, CC2500_REG_FIFOTHR, 1);
+	
+	/*---- I/O Config ----*/
+	// IOCFG2    GDO2 output pin configuration.
+	tmp = CC2500_CFG_IOCFG2;
+	CC2500_Write(&tmp, CC2500_REG_IOCFG2, 1);
+	
+	// IOCFG0D   GDO0 output pin configuration.
+	tmp = CC2500_CFG_IOCFG0D;
+	CC2500_Write(&tmp, CC2500_REG_IOCFG0, 1);
+	
+	
+	// PKTCTRL1  Packet automation control.
+	tmp = CC2500_CFG_PKTCTRL0;
+	CC2500_Write(&tmp, CC2500_REG_PKTCTRL0, 1);
+	
+	// PKTCTRL0  Packet automation control.
+	// Fixed Packet Length (0x05)
+	tmp = CC2500_CFG_PKTCTRL0;
+	CC2500_Write(&tmp, CC2500_REG_PKTCTRL0, 1);
+	
+	// ADDR      Device address.
+	// Global Broadcast Address
+	tmp = CC2500_CFG_ADDR;
+	CC2500_Write(&tmp, CC2500_REG_ADDR, 1);
+	
+	// PKTLEN    Packet length.
+	 // Packet Length of 10bytes
+	tmp = CC2500_CFG_PKTLEN;
+	CC2500_Write(&tmp, CC2500_REG_PKTLEN, 1);
+}
+
+
+
 
 /**
   * @brief  Writes one byte to the CC2500.

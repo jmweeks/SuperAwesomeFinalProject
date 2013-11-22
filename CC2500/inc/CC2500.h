@@ -18,7 +18,6 @@
 
 
 
-
 #define CC2500_FLAG_TIMEOUT         ((uint32_t)0x1000)
 
 /**
@@ -275,9 +274,9 @@ Bit 		Field Name 			Description
 												Always use FOC_LIMIT=0 with this modulation format.
 */
 #define CC2500_REG_BSCFG				0x1A 
-#define CC2500_REG_AGCTRL2			0x1B 
-#define CC2500_REG_AGCTRL1 			0x1C 
-#define CC2500_REG_AGCTRL0			0x1D 
+#define CC2500_REG_AGCCTRL2			0x1B 
+#define CC2500_REG_AGCCTRL1 			0x1C 
+#define CC2500_REG_AGCCTRL0			0x1D 
 #define CC2500_REG_WOREVT1 			0x1E 
 #define CC2500_REG_WOREVT0 			0x1F 
 #define CC2500_REG_WORCTRL 			0x20 
@@ -403,6 +402,7 @@ Bit 		Field Name 			Description
 void CC2500_Init(void);
 void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
+void CC2500_config_transmitter();
 	
 	/* USER Callbacks: This is function for which prototype only is declared in
    MEMS accelerometre driver and that should be implemented into user applicaiton. */  

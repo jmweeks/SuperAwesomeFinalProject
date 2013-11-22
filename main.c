@@ -44,51 +44,26 @@ int main (void) {
 	//CC2500_Read(&dummyData, dummyAddr, 1);
 	
 	dummyData[0] =2;
-// 	
-//  	
-// 	CC2500_CS_LOW();
-// 	osDelay(1000);
-// 	CC2500_CS_HIGH();
-// 	osDelay(1000);
-// 	
-	//CC2500_Read(dummyData, 0x30, 1);//send SRES reset strobe
-	//osDelay(1000);
-	CC2500_Read(dummyData, 0x30, 6);//send SRES reset strobe
-//	osDelay(1000);
-	
-	
 
-	
-// 	CC2500_Read(dummyData, 0x36, 1); //send IDLE command strobe
-// 	osDelay(1000);
+	CC2500_Read(dummyData, 0x31, 6);//send SRES reset strobe
+
 	
 	dummyData[0] = 0x0A;
 	dummyAddr = 0x00;
 	
-	CC2500_Write(dummyData, dummyAddr, 1); //write to register 0
+	//CC2500_Write(dummyData, dummyAddr, 1); //write to register 0
+	//CC2500_Read(dummyData, dummyAddr, 1); 
+
+	CC2500_config_transmitter();
+	
+	//CC2500_CFG_FSCTRL1 is 0x0C
+ 	CC2500_Read(dummyData, CC2500_REG_FSCTRL1, 1); 
 	osDelay(1000);
 	
-// 	CC2500_Read(dummyData, 0x30, 1);//send SRES reset strobe
-// 	osDelay(1000);
+	//CC2500_CFG_MDMCFG1 should be 0x42
+	CC2500_Read(dummyData, CC2500_REG_MDMCFG1, 1); 
+
 	
- 	CC2500_Read(dummyData, dummyAddr, 1); 
-	osDelay(1000);
-	
-	// 	CC2500_Write(&dummyWrite, dummyAddr,1);
-// 	dummyAddr = CC2500_REG_MDMCFG3;
- 	//CC2500_Read(dummyData, dummyAddr, 1);
-
-
-	//init_TIM4(1 / SERVO_DUTY_CYCLE_STEP, SERVO_FREQUENCY);
-	//init_TIM4(ACCELEROMETER_PWM_STEPS, ACCELEROMETER_PWM_FREQUENCY);
-	//init_LEDS_PWM();
-	//init_servo(&servo, 3);
-	//        init_orientation(&orientation);
-	//        init_accelerometer();
-	//        
-
-	// Start thread
-	//tid_thread = osThreadCreate(osThread(thread), NULL);
 
 	// The below doesn't really need to be in a loop
 	while(1){
