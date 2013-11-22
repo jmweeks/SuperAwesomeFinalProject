@@ -387,6 +387,47 @@ Bit 		Field Name 			Description
 /******************************************************************************/
 /*************************** END REGISTER CONFIGURATION  **************************/
 /******************************************************************************/
+/*************************DEFINE COMMAND STROBES***********************************/
+
+//_T suffix to access TX FIFO register
+#define SRES_T					0x30
+#define SFSTXON_T				0x31
+#define SXOFF_T					0x32
+#define SCAL_T					0x33
+#define SRX_T						0x34
+#define STX_T						0x35
+#define SIDLE_T					0x36
+#define UNKNOWN_T				0x37
+#define SWOR_T					0x38
+#define SPWD_T					0x39
+#define SFRX_T					0x3A
+#define SFTX_T					0x3B
+#define SWORRST_T				0x3C
+#define SNOP_T					0x3D
+
+//_R suffix to access RX FIFO register
+#define SRES_R					0xB0
+#define SFSTXON_R				0xB1
+#define SXOFF_R					0xB2
+#define SCAL_R					0xB3
+#define SRX_R						0xB4
+#define STX_R						0xB5
+#define SIDLE_R					0xB6
+#define UNKNOWN_R				0xB7
+#define SWOR_R					0xB8
+#define SPWD_R					0xB9
+#define SFRX_R					0xBA
+#define SFTX_R					0xBB
+#define SWORRST_R				0xBC
+#define SNOP_R					0xBD
+
+
+
+
+
+
+
+
 
 /** @defgroup CC2500_Exported_Macros
   * @{
@@ -403,6 +444,7 @@ void CC2500_Init(void);
 void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
 void CC2500_config_transmitter();
+void CC2500_StrobeSend(uint8_t cmd, uint8_t* state, uint8_t* buffer_space);
 	
 	/* USER Callbacks: This is function for which prototype only is declared in
    MEMS accelerometre driver and that should be implemented into user applicaiton. */  

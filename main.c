@@ -26,6 +26,8 @@ osThreadDef(thread, osPriorityNormal, 1, 0);
 uint8_t  dummyData[2] ={0,0};
 uint8_t dummyAddr;
 uint8_t dummyWrite;
+uint8_t state;
+uint8_t buffer_space;
 
 /*!
  @brief Program entry point
@@ -55,6 +57,18 @@ int main (void) {
 	//CC2500_Read(dummyData, dummyAddr, 1); 
 
 	CC2500_config_transmitter();
+	
+	CC2500_StrobeSend(SRES_R,&state,&buffer_space);
+	osDelay(1000);
+	
+	//go to receive state
+	CC2500_StrobeSend(SFRX_R,&state,&buffer_space);
+	osDelay(1000);
+	CC2500_StrobeSend(SRX_R,&state,&buffer_space);
+	osDelay(1000);
+	CC2500_StrobeSend(SRX_R,&state,&buffer_space);
+	osDelay(1000);
+	
 	
 	//CC2500_CFG_FSCTRL1 is 0x0C
  	CC2500_Read(dummyData, CC2500_REG_FSCTRL1, 1); 

@@ -377,6 +377,30 @@ static void CC2500_LowLevel_Init(void)
   GPIO_InitStructure.GPIO_Pin = LIS302DL_SPI_INT2_PIN;
   GPIO_Init(LIS302DL_SPI_INT2_GPIO_PORT, &GPIO_InitStructure);   */
 }
+/**
+  * @brief  Sends command strobe to the CC2500.
+  * @param  cmd representing command strobe to be issued (see CC2500 UM page 60, table 37).
+  * @param  Pointer to the current state of the CC2500(before strobe was issued).
+	* @param  Pointer to number of free bytes in the CC2500 FIFO(before strobe was issued).
+  * @retval None
+  */
+void CC2500_StrobeSend(uint8_t cmd, uint8_t* state, uint8_t* buffer_space)
+{
+	uint8_t chip_status =0;
+	
+  /* Set chip select Low at the start of the transmission */
+  CC2500_CS_LOW();
+  
+  /* Send the command and receive chip ststus byte, and extract the state (bytes 6:4) */
+  chip_status = CC2500_SendByte(cmd);
+  
+  /* Set chip select High at the end of the transmission */ 
+  CC2500_CS_HIGH();
+	
+	*state = chip_status & 0x70;
+	*buffer_space = chip_status & 0x0F;
+	
+}
 
 /**
   * @brief  Sends a Byte through the SPI interface and return the Byte received 
