@@ -201,6 +201,11 @@ void CC2500_config_transmitter(){
 	 // Packet Length of 10bytes
 	tmp = CC2500_CFG_PKTLEN;
 	CC2500_Write(&tmp, CC2500_REG_PKTLEN, 1);
+	
+	// PKTLEN    Packet length.
+	 // Packet Length of 10bytes
+	tmp = CC2500_CFG_MCSM1;
+	CC2500_Write(&tmp, CC2500_REG_MCSM1, 1);
 }
 
 
@@ -393,9 +398,18 @@ void CC2500_StrobeSend(uint8_t cmd, uint8_t* state, uint8_t* buffer_space)
   
   /* Send the command and receive chip ststus byte, and extract the state (bytes 6:4) */
   chip_status = CC2500_SendByte(cmd);
-  
+
   /* Set chip select High at the end of the transmission */ 
   CC2500_CS_HIGH();
+	
+ //	osDelay(10);
+ //	CC2500_CS_LOW();
+//   
+//   /* Send the command and receive chip ststus byte, and extract the state (bytes 6:4) */
+  // chip_status = CC2500_SendByte(DUMMY_BYTE);
+//   
+//   /* Set chip select High at the end of the transmission */ 
+  // CC2500_CS_HIGH();
 	
 	*state = chip_status & 0x70;
 	*buffer_space = chip_status & 0x0F;

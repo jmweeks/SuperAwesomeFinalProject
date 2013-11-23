@@ -45,44 +45,103 @@ int main (void) {
 	//dummyAddr = CC2500_REG_MDMCFG3;
 	//CC2500_Read(&dummyData, dummyAddr, 1);
 	
-	dummyData[0] =2;
+	dummyData[0] =0x02;
+	dummyData[1]=0x0A;
 
-	CC2500_Read(dummyData, 0x31, 6);//send SRES reset strobe
-
+	CC2500_Write(dummyData, 0x00, 2);
+	dummyData[0]=0;
+	CC2500_Read(dummyData, 0x00, 2);//send SRES reset strobe
+	
 	
 	dummyData[0] = 0x0A;
-	dummyAddr = 0x00;
+	uint8_t dummyArray[64];
+	int i;
+	for (i=0; i<64; i++){
+		dummyArray[i]=i;
+	}
 	
-	//CC2500_Write(dummyData, dummyAddr, 1); //write to register 0
-	//CC2500_Read(dummyData, dummyAddr, 1); 
 
+	
 	CC2500_config_transmitter();
 	
-	CC2500_StrobeSend(SRES_R,&state,&buffer_space);
+	CC2500_Read(dummyData, 0x17,1);//send SRES reset strobe
+	
+	dummyAddr = 0x3F;
+// 	CC2500_StrobeSend(SRES_T,&state,&buffer_space);
+// 	osDelay(1000);
+	
+	CC2500_StrobeSend(SFTX_T,&state,&buffer_space);
 	osDelay(1000);
+	
+	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
+	osDelay(1000);
+	
+	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
+	osDelay(1000);
+	
+	CC2500_StrobeSend(SCAL_T,&state,&buffer_space);
+	osDelay(1000);
+	
+	CC2500_Write(dummyArray, dummyAddr, 64); 
+	osDelay(1000);
+	
+	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+	
+	CC2500_StrobeSend(STX_T,&state,&buffer_space);
+	
+	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+
+	
+	
+// 	CC2500_StrobeSend(SRES_T,&state,&buffer_space);
+// 	osDelay(1000);
 	
 	//go to receive state
-	CC2500_StrobeSend(SFRX_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SRX_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SRX_R,&state,&buffer_space);
-	osDelay(1000);
+	//CC2500_StrobeSend(SFRX_R,&state,&buffer_space);
+	//osDelay(1000);
+// 	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+// 	
+// 	CC2500_StrobeSend(STX_T,&state,&buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+// 	
+
+// 	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+// 	
+// 	CC2500_StrobeSend(STX_T,&state,&buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+// 	
+// // 	CC2500_StrobeSend(SRX_R,&state,&buffer_space);
+// // 	osDelay(1000);
+// 	
+// 	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+// 	
+// 	CC2500_StrobeSend(STX_T,&state,&buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
 	
 	
-	//CC2500_CFG_FSCTRL1 is 0x0C
- 	CC2500_Read(dummyData, CC2500_REG_FSCTRL1, 1); 
-	osDelay(1000);
-	
-	//CC2500_CFG_MDMCFG1 should be 0x42
-	CC2500_Read(dummyData, CC2500_REG_MDMCFG1, 1); 
+// 	//CC2500_CFG_FSCTRL1 is 0x0C
+//  	CC2500_Read(dummyData, CC2500_REG_FSCTRL1, 1); 
+// 	osDelay(1000);
+// 	
+// 	//CC2500_CFG_MDMCFG1 should be 0x42
+// 	CC2500_Read(dummyData, CC2500_REG_MDMCFG1, 1); 
 
 	
 
 	// The below doesn't really need to be in a loop
 	while(1){
-		CC2500_Read(dummyData, dummyAddr, 1); 
-		osDelay(1000);
+//	CC2500_StrobeSend(STX_T,&state,&buffer_space);
+	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);		
+		//osDelay(1000);
 		//osDelay(osWaitForever);
 	}
 }

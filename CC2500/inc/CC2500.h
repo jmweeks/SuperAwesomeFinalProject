@@ -377,11 +377,13 @@ Bit 		Field Name 			Description
 
 #define CC2500_CFG_PKTCTRL1   0x04  //Packet Automation Control
 
-#define CC2500_CFG_PKTCTRL0   0x05 //0x05 // Fixed Packet Length (0x05)
+#define CC2500_CFG_PKTCTRL0   0x04 //0x05 // Fixed Packet Length (0x05)
 
 #define CC2500_CFG_ADDR       0x00 // Global Broadcast Address
 
-#define CC2500_CFG_PKTLEN     0x0A // Packet Length of 10bytes (0xFF)
+#define CC2500_CFG_PKTLEN     0x01 // Packet Length of 10bytes (0xA) we could maybe set this to 2 for pitch & roll
+
+#define CC2500_CFG_MCSM1      0x3E //page71 of reference manual
 
 
 /******************************************************************************/
