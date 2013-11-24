@@ -21,7 +21,10 @@ __IO uint32_t  CC2500Timeout = CC2500_FLAG_TIMEOUT;
 //Local functions
 static void CC2500_LowLevel_Init(void);
 static uint8_t CC2500_SendByte(uint8_t byte);
-
+uint8_t tmp_data[12];
+uint8_t FSM_state;
+uint8_t FSM_buffer_space;
+int i;
 
 /**
   * @brief  Set CC2500 Initialization.
@@ -459,4 +462,33 @@ uint32_t CC2500_TIMEOUT_UserCallback(void)
   while (1)
   {   
   }
+}
+
+void Wireless_TX(uint8_t * data){
+	
+// 	//go to idle state
+// 	CC2500_StrobeSend(SIDLE_T,&FSM_state,&FSM_buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&FSM_state,&FSM_buffer_space);
+	
+	//Copy data for TMR
+	for(i = 0; i < 4; i++){
+		tmp_data[3*i] = data[i];
+		tmp_data[3*i + 1] = data[i];
+		tmp_data[3*i + 2] = data[i];
+	}
+	 
+	
+// 	//Flush TX buffer
+// 	CC2500_StrobeSend(SFTX_T,&FSM_state,&FSM_buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&FSM_state,&FSM_buffer_space);
+	
+	CC2500_Write(tmp_data, 0x3F, 12);
+	
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(STX_T,&FSM_state,&FSM_buffer_space);
+// 	osDelay(1000);
+// 	CC2500_StrobeSend(SNOP_T,&FSM_state,&FSM_buffer_space);
+// 	osDelay(1000);
 }

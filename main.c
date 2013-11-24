@@ -8,6 +8,9 @@
 #include "project_servo.h"
 #include "project_filter.h"
 #include "project_accelerometer.h"
+#include "project_lcd.h"
+#include "project_magnet.h"
+#include "project_robot.h"
 #include "CC2500.h"
 
 
@@ -28,6 +31,9 @@ uint8_t dummyAddr;
 uint8_t dummyWrite;
 uint8_t state;
 uint8_t buffer_space;
+uint8_t dummyArray[64];
+uint8_t testArray[3] = {1,1,1};
+
 
 /*!
  @brief Program entry point
@@ -45,60 +51,67 @@ int main (void) {
 	//dummyAddr = CC2500_REG_MDMCFG3;
 	//CC2500_Read(&dummyData, dummyAddr, 1);
 	
-	dummyData[0] =0xD3;
-	dummyData[1]=0x91;
+	dummyData[0] =0x02;
+	dummyData[1]=0x0A;
 
-	CC2500_Write(dummyData, 0x04, 2);
-	CC2500_Read(dummyData, 0x04, 2);//send SRES reset strobe
+	CC2500_Write(dummyData, 0x00, 2);
+	dummyData[0]=0;
+	CC2500_Read(dummyData, 0x00, 2);//send SRES reset strobe
 	
 	
-//	dummyData[0] = 0x0A;
-	uint8_t dummyArray[64];
+	dummyData[0] = 0x0A;
 	int i;
-	for (i=0; i<64; i++){
-		dummyArray[i]=0;
+	int j;
+	while(i<20){
+		dummyArray[3*i] = i;
+		dummyArray[3*i + 1] = i;
+		dummyArray[3*i + 2] = i;
+		i++;
 	}
+	
+	
 	
 
 	
 	CC2500_config_transmitter();
 	
-	CC2500_Write(dummyData, 0x04, 2);
-	CC2500_Read(dummyData, 0x04, 2);//send SRES reset strobe
-	
-	//CC2500_Read(dummyData, 0x17,1);//send SRES reset strobe
+	CC2500_Read(dummyData, 0x04,2);//send SRES reset strobe
+	//CC2500_Read(dummyData, CC2500_REG_SYNC1,1);
 	
 	dummyAddr = 0x3F;
 // 	CC2500_StrobeSend(SRES_T,&state,&buffer_space);
 // 	osDelay(1000);
 	
-	CC2500_StrobeSend(SIDLE_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);
-	
-	CC2500_StrobeSend(SFRX_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);
-	
-	
-	CC2500_StrobeSend(SIDLE_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);	
-	
-	CC2500_StrobeSend(SCAL_R,&state,&buffer_space);
+	CC2500_StrobeSend(SFTX_T,&state,&buffer_space);
 	osDelay(1000);
 	
-//	CC2500_Write(dummyArray, dummyAddr, 64); 
-//	osDelay(1000);
-	
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);
-	
-	CC2500_StrobeSend(SRX_R,&state,&buffer_space);
+	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
 	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);	
 	
-	//CC2500_Read(dummyArray, 0x3F, 64); 
-	//osDelay(1000);	
+	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
+	osDelay(1000);
+	
+	CC2500_StrobeSend(SCAL_T,&state,&buffer_space);
+	osDelay(1000);
+/////////////////////////
+
+// 	CC2500_StrobeSend(STX_T,&state,&buffer_space);
+// 	osDelay(1000);
+	
+	uint8_t data[4] = {1,2,3,4};
+	
+	Wireless_TX(data);
+
+	//CC2500_Write(dummyArray, 0x3F, 60); 
+	osDelay(1000);
+	
+	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+	
+	CC2500_StrobeSend(STX_T,&state,&buffer_space);
+	
+	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
+
+	
 	
 // 	CC2500_StrobeSend(SRES_T,&state,&buffer_space);
 // 	osDelay(1000);
@@ -141,30 +154,13 @@ int main (void) {
 // 	
 // 	//CC2500_CFG_MDMCFG1 should be 0x42
 // 	CC2500_Read(dummyData, CC2500_REG_MDMCFG1, 1); 
-	while (buffer_space < 0x05){
-		CC2500_StrobeSend(SNOP_R,&state,&buffer_space);	
-	}
-	osDelay(1000);
-	int j = 0;
-	while (buffer_space > 0x00){
-		CC2500_Read(dummyData, 0x33, 2);	
-		if((dummyData[0] & 0x80) == 0x80){
-			CC2500_Read(&dummyArray[j], 0x3F, 1);
-		}
-		else{
-			dummyArray[j] = 0xFF;
-		}
-		j++;
-		CC2500_StrobeSend(SNOP_R,&state,&buffer_space);	
-	}
+
 	
-//	CC2500_Read(dummyArray, 0x3F, 64); 
-	osDelay(1000);
 
 	// The below doesn't really need to be in a loop
 	while(1){
 //	CC2500_StrobeSend(STX_T,&state,&buffer_space);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);		
+	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);		
 		//osDelay(1000);
 		//osDelay(osWaitForever);
 	}
