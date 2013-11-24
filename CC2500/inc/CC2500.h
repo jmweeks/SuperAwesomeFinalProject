@@ -382,7 +382,7 @@ Bit 		Field Name 			Description
 
 #define CC2500_CFG_ADDR       0x00 // Global Broadcast Address
 
-#define CC2500_CFG_PKTLEN     0x03 // Packet Length of 10bytes (0xA) we could maybe set this to 2 for pitch & roll
+#define CC2500_CFG_PKTLEN     0x0C // Packet Length of 10bytes (0xA) we could maybe set this to 2 for pitch & roll
 
 #define CC2500_CFG_MCSM1      0x3E //page71 of reference manual
 
@@ -449,6 +449,7 @@ void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
 void CC2500_config_transmitter();
 void CC2500_StrobeSend(uint8_t cmd, uint8_t* state, uint8_t* buffer_space);
 void Wireless_TX(uint8_t * data);
+void Wireless_RX(uint8_t *data);
 	
 	/* USER Callbacks: This is function for which prototype only is declared in
    MEMS accelerometre driver and that should be implemented into user applicaiton. */  

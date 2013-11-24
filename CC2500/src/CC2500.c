@@ -22,6 +22,7 @@ __IO uint32_t  CC2500Timeout = CC2500_FLAG_TIMEOUT;
 static void CC2500_LowLevel_Init(void);
 static uint8_t CC2500_SendByte(uint8_t byte);
 uint8_t tmp_data[12];
+uint8_t tmp_data_RX[3];
 uint8_t FSM_state;
 uint8_t FSM_buffer_space;
 int i;
@@ -491,4 +492,21 @@ void Wireless_TX(uint8_t * data){
 // 	osDelay(1000);
 // 	CC2500_StrobeSend(SNOP_T,&FSM_state,&FSM_buffer_space);
 // 	osDelay(1000);
+}
+
+void Wireless_RX(uint8_t *data){
+	
+	CC2500_StrobeSend(SNOP_R,&FSM_state,&FSM_buffer_space);
+	
+	//wait until theres a packet to be read
+	while (FSM_buffer_space < 12){
+		CC2500_StrobeSend(SNOP_R,&FSM_state,&FSM_buffer_space);	
+	}
+	
+	//read packet one byte at a time and do TMR
+	for(i = 0; i < 4; i++){
+		CC2500_Read(tmp_data_RX, 0x3F, 3);
+		data[i] = ((tmp_data_RX[0]& tmp_data_RX[1])|(tmp_data_RX[0]& tmp_data_RX[2])|(tmp_data_RX[1]&tmp_data_RX[2]));		
+	}
+	
 }
