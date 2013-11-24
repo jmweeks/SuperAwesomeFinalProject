@@ -375,9 +375,9 @@ Bit 		Field Name 			Description
 
 #define CC2500_CFG_IOCFG0D    0x06
 
-#define CC2500_CFG_PKTCTRL1   0x04  //Packet Automation Control
+#define CC2500_CFG_PKTCTRL1   0x00  //Packet Automation Control
 
-#define CC2500_CFG_PKTCTRL0   0x04 //0x05 // Fixed Packet Length (0x05)
+#define CC2500_CFG_PKTCTRL0   0x0C //0x05 // Fixed Packet Length (0x05)
 
 #define CC2500_CFG_ADDR       0x00 // Global Broadcast Address
 

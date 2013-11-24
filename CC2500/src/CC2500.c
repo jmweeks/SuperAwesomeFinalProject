@@ -184,8 +184,8 @@ void CC2500_config_transmitter(){
 	
 	
 	// PKTCTRL1  Packet automation control.
-	tmp = CC2500_CFG_PKTCTRL0;
-	CC2500_Write(&tmp, CC2500_REG_PKTCTRL0, 1);
+	tmp = CC2500_CFG_PKTCTRL1;
+	CC2500_Write(&tmp, CC2500_REG_PKTCTRL1, 1);
 	
 	// PKTCTRL0  Packet automation control.
 	// Fixed Packet Length (0x05)
