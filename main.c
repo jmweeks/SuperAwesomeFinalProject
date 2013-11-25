@@ -52,129 +52,24 @@ int main (void) {
 	
 	tid_thread = osThreadCreate(osThread(thread), NULL);
 	
-	//dummyData = 4;
-	//dummyAddr = CC2500_REG_MDMCFG3;
-	//dummyWrite = CC2500_CFG_MDMCFG3;
-	//CC2500_Read(&dummyData, 0x30, 1);//send reset strobe
-	//CC2500_Read(&dummyData, 0x30, 6); //set burst byte to read status reg expected: 0x03 for addr 0x31 and (0x80 for 0x30)
-	//CC2500_Write(&dummyWrite, dummyAddr,1);
-	//dummyAddr = CC2500_REG_MDMCFG3;
-	//CC2500_Read(&dummyData, dummyAddr, 1);
-	
-	dummyData[0] =0x02;
-	dummyData[1]=0x0A;
-
-//	CC2500_Write(dummyData, 0x00, 2);
-//	dummyData[0]=0;
-//	CC2500_Read(dummyData, 0x00, 2);//send SRES reset strobe
-	
-	
-//	dummyData[0] = 0x0A;
-//	int i;
-//	int j;
-//	while(i<20){
-//		dummyArray[3*i] = i;
-//		dummyArray[3*i + 1] = i;
-//		dummyArray[3*i + 2] = i;
-//		i++;
-//	}
-//	
-	
-	
-
-	
 	CC2500_config_transmitter();
 	
-	CC2500_Read(dummyData, 0x04,2);//send SRES reset strobe
-	//CC2500_Read(dummyData, CC2500_REG_SYNC1,1);
+	goToRX();
 	
-	dummyAddr = 0x3F;
-// 	CC2500_StrobeSend(SRES_T,&state,&buffer_space);
-// 	osDelay(1000);
-	
-//	CC2500_StrobeSend(SFTX_T,&state,&buffer_space);
-//	osDelay(1000);
-//	
-//	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
-//	osDelay(1000);
-//	
-//	CC2500_StrobeSend(SIDLE_T,&state,&buffer_space);
-//	osDelay(1000);
-//	
-//	CC2500_StrobeSend(SCAL_T,&state,&buffer_space);
-//	osDelay(1000);
-/////////////////////////
-
-// 	CC2500_StrobeSend(STX_T,&state,&buffer_space);
-// 	osDelay(1000);
-	
-	uint8_t data[4] = {0,0,0,0};
-//	
-//	Wireless_TX(data);
-
-//	//CC2500_Write(dummyArray, 0x3F, 60); 
-//	osDelay(1000);
-//	
-//	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
-//	
-//	CC2500_StrobeSend(STX_T,&state,&buffer_space);
-//	
-//	CC2500_StrobeSend(SNOP_T,&state,&buffer_space);
-
-	
-	CC2500_StrobeSend(SIDLE_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);
-	
-	CC2500_StrobeSend(SFRX_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);
-	
-	
-	CC2500_StrobeSend(SIDLE_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);	
-	
-	CC2500_StrobeSend(SCAL_R,&state,&buffer_space);
-	osDelay(1000);
-	
-//	CC2500_Write(dummyArray, dummyAddr, 64); 
-//	osDelay(1000);
-	
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);
-	
-	CC2500_StrobeSend(SRX_R,&state,&buffer_space);
-	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);	
-
-	Wireless_RX(data);
 	osDelay(osWaitForever);
 }
 
 void thread (void const *argument) {
 	parkRobot(&robot);
 	osDelay(1000);
+	uint8_t data[4];
 	while(1) {
-		moveRobot(&robot, 0, 0, 11);
-		turnMagnetOff(&magnet);
-		osDelay(2000);
-		moveRobot(&robot, 1, 0, 11);
-		turnMagnetOff(&magnet);
-		osDelay(2000);
-		moveRobot(&robot, 2, 0, 11);
-		turnMagnetOff(&magnet);
-		osDelay(2000);
-		moveRobot(&robot, 3, 0, 11);
-		turnMagnetOff(&magnet);
-		osDelay(2000);
-		moveRobot(&robot, 4, 0, 11);
-		turnMagnetOff(&magnet);
-		osDelay(2000);
-		moveRobot(&robot, 5, 0, 11);
-		turnMagnetOff(&magnet);
-		osDelay(2000);
-		moveRobot(&robot, 6, 0, 11);
-		turnMagnetOn(&magnet);
-		osDelay(2000);
+		Wireless_RX(data);
+		moveRobot(&robot, data[0], data[1], data[2]);
+		if (data[3]) {
+			turnMagnetOn(&magnet);
+		} else {
+			turnMagnetOff(&magnet);
+		}
 	}
 }
