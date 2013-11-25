@@ -20,8 +20,9 @@
  */
 void thread(void const *argument);
 
-static struct Servo servo;
-static struct Orientation orientation;
+static struct Servo boomServo, crowdServo, swingServo;
+static struct Robot robot;
+static struct Magnet magnet;
 
 //! Thread structure for above thread
 osThreadDef(thread, osPriorityNormal, 1, 0);
@@ -41,6 +42,15 @@ uint8_t testArray[3] = {1,1,1};
 int main (void) {
 	osThreadId tid_thread;
 	CC2500_Init();
+	init_TIM4(1 / SERVO_DUTY_CYCLE_STEP, SERVO_FREQUENCY);
+	init_LEDS_PWM();
+	init_servo(&boomServo, 1, BOOM_ANGLE_MAX, BOOM_ANGLE_MIN);
+	init_servo(&crowdServo, 2, CROWD_ANGLE_MAX, CROWD_ANGLE_MIN);
+	init_servo(&swingServo, 3, SWING_ANGLE_MAX, SWING_ANGLE_MIN);
+	init_robot(&robot, &boomServo, &crowdServo, &swingServo);
+	init_magnet(&magnet, RCC_AHB1Periph_GPIOD, GPIOD, GPIO_Pin_15);
+	
+	tid_thread = osThreadCreate(osThread(thread), NULL);
 	
 	//dummyData = 4;
 	//dummyAddr = CC2500_REG_MDMCFG3;
@@ -138,27 +148,33 @@ int main (void) {
 	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);	
 
 	Wireless_RX(data);
-	
-
-
-	// The below doesn't really need to be in a loop
-	while(1){
-//	CC2500_StrobeSend(STX_T,&state,&buffer_space);
-	CC2500_StrobeSend(SNOP_R,&state,&buffer_space);		
-		//osDelay(1000);
-		//osDelay(osWaitForever);
-	}
+	osDelay(osWaitForever);
 }
 
 void thread (void const *argument) {
+	parkRobot(&robot);
+	osDelay(1000);
 	while(1) {
-		osMutexWait(servo.mutexID, osWaitForever);
-		servo.position = 180;
-		osMutexRelease(servo.mutexID);
-		osDelay(10000);
-		osMutexWait(servo.mutexID, osWaitForever);
-		servo.position = 0;
-		osMutexRelease(servo.mutexID);
-		osDelay(10000);
+		moveRobot(&robot, 0, 0, 11);
+		turnMagnetOff(&magnet);
+		osDelay(2000);
+		moveRobot(&robot, 1, 0, 11);
+		turnMagnetOff(&magnet);
+		osDelay(2000);
+		moveRobot(&robot, 2, 0, 11);
+		turnMagnetOff(&magnet);
+		osDelay(2000);
+		moveRobot(&robot, 3, 0, 11);
+		turnMagnetOff(&magnet);
+		osDelay(2000);
+		moveRobot(&robot, 4, 0, 11);
+		turnMagnetOff(&magnet);
+		osDelay(2000);
+		moveRobot(&robot, 5, 0, 11);
+		turnMagnetOff(&magnet);
+		osDelay(2000);
+		moveRobot(&robot, 6, 0, 11);
+		turnMagnetOn(&magnet);
+		osDelay(2000);
 	}
 }

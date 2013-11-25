@@ -457,6 +457,21 @@
               <FileType>1</FileType>
               <FilePath>.\src\project_filter.c</FilePath>
             </File>
+            <File>
+              <FileName>project_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\project_lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>project_magnet.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\project_magnet.c</FilePath>
+            </File>
+            <File>
+              <FileName>project_robot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\project_robot.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
