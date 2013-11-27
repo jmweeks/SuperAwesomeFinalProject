@@ -4,14 +4,12 @@
 #include "cmsis_os.h"
 
 #include "project_init.h"
-#include "project_pwm.h"
 #include "project_servo.h"
-#include "project_filter.h"
-#include "project_accelerometer.h"
-#include "project_lcd.h"
 #include "project_magnet.h"
 #include "project_robot.h"
 #include "CC2500.h"
+
+#include <stdlib.h>
 
 
 /*!
@@ -26,15 +24,6 @@ static struct Magnet magnet;
 
 //! Thread structure for above thread
 osThreadDef(thread, osPriorityNormal, 1, 0);
-
-uint8_t  dummyData[2] ={0,0};
-uint8_t dummyAddr;
-uint8_t dummyWrite;
-uint8_t state;
-uint8_t buffer_space;
-uint8_t dummyArray[64];
-uint8_t testArray[3] = {1,1,1};
-
 
 /*!
  @brief Program entry point
@@ -63,13 +52,39 @@ void thread (void const *argument) {
 	parkRobot(&robot);
 	osDelay(1000);
 	uint8_t data[4];
+	uint32_t prevY1=0, prevAngle1=0, nextY1=rand()%7, nextAngle1=rand()%14;
+	uint32_t prevY2=0, prevAngle2=0, nextY2=rand()%7, nextAngle2=rand()%14;
 	while(1) {
-		Wireless_RX(data);
-		moveRobot(&robot, data[0], data[1], data[2]);
-		if (data[3]) {
-			turnMagnetOn(&magnet);
-		} else {
-			turnMagnetOff(&magnet);
-		}
+		//Wireless_RX(data);
+		//moveRobot(&robot, data[0], data[1], data[2]);
+		//if (data[3]) {
+		//	turnMagnetOn(&magnet);
+		//} else {
+		//	turnMagnetOff(&magnet);
+		//}
+		
+		moveRobot(&robot, prevY1, 0, prevAngle1);
+		turnMagnetOn(&magnet);
+		osDelay(500);
+		moveRobot(&robot, nextY1, 0, nextAngle1);
+		turnMagnetOff(&magnet);
+		osDelay(500);
+		
+		moveRobot(&robot, prevY2, 0, prevAngle2);
+		turnMagnetOn(&magnet);
+		osDelay(500);
+		moveRobot(&robot, nextY2, 0, nextAngle2);
+		turnMagnetOff(&magnet);
+		osDelay(500);
+		
+		prevY1=nextY1;
+		prevAngle1=nextAngle1;
+		prevY2=nextY2;
+		prevAngle2=nextAngle2;
+		
+		nextY1=rand()%7;
+		nextAngle1=rand()%14;
+		nextY2=rand()%7;
+		nextAngle2=rand()%14;
 	}
 }
