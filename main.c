@@ -25,6 +25,8 @@ static struct Magnet magnet;
 //! Thread structure for above thread
 osThreadDef(thread, osPriorityNormal, 1, 0);
 
+uint8_t state, buffer_space;
+
 /*!
  @brief Program entry point
  */
@@ -43,7 +45,7 @@ int main (void) {
 	
 	CC2500_config_transmitter();
 	
-	goToRX();
+	goToRX(&state, &buffer_space);
 	
 	osDelay(osWaitForever);
 }
@@ -52,39 +54,39 @@ void thread (void const *argument) {
 	parkRobot(&robot);
 	osDelay(1000);
 	uint8_t data[4];
-	uint32_t prevY1=0, prevAngle1=0, nextY1=rand()%7, nextAngle1=rand()%14;
-	uint32_t prevY2=0, prevAngle2=0, nextY2=rand()%7, nextAngle2=rand()%14;
+//	uint32_t prevY1=0, prevAngle1=0, nextY1=rand()%7, nextAngle1=rand()%14;
+//	uint32_t prevY2=0, prevAngle2=0, nextY2=rand()%7, nextAngle2=rand()%14;
 	while(1) {
-		//Wireless_RX(data);
-		//moveRobot(&robot, data[0], data[1], data[2]);
-		//if (data[3]) {
-		//	turnMagnetOn(&magnet);
-		//} else {
-		//	turnMagnetOff(&magnet);
-		//}
+		wireless_RX(data, 4, &state, &buffer_space);
+		moveRobot(&robot, data[0], data[1], data[2]);
+		if (data[3]) {
+			turnMagnetOn(&magnet);
+		} else {
+			turnMagnetOff(&magnet);
+		}
 		
-		moveRobot(&robot, prevY1, 0, prevAngle1);
-		turnMagnetOn(&magnet);
-		osDelay(500);
-		moveRobot(&robot, nextY1, 0, nextAngle1);
-		turnMagnetOff(&magnet);
-		osDelay(500);
-		
-		moveRobot(&robot, prevY2, 0, prevAngle2);
-		turnMagnetOn(&magnet);
-		osDelay(500);
-		moveRobot(&robot, nextY2, 0, nextAngle2);
-		turnMagnetOff(&magnet);
-		osDelay(500);
-		
-		prevY1=nextY1;
-		prevAngle1=nextAngle1;
-		prevY2=nextY2;
-		prevAngle2=nextAngle2;
-		
-		nextY1=rand()%7;
-		nextAngle1=rand()%14;
-		nextY2=rand()%7;
-		nextAngle2=rand()%14;
+//		moveRobot(&robot, prevY1, 0, prevAngle1);
+//		turnMagnetOn(&magnet);
+//		osDelay(500);
+//		moveRobot(&robot, nextY1, 0, nextAngle1);
+//		turnMagnetOff(&magnet);
+//		osDelay(500);
+//		
+//		moveRobot(&robot, prevY2, 0, prevAngle2);
+//		turnMagnetOn(&magnet);
+//		osDelay(500);
+//		moveRobot(&robot, nextY2, 0, nextAngle2);
+//		turnMagnetOff(&magnet);
+//		osDelay(500);
+//		
+//		prevY1=nextY1;
+//		prevAngle1=nextAngle1;
+//		prevY2=nextY2;
+//		prevAngle2=nextAngle2;
+//		
+//		nextY1=rand()%7;
+//		nextAngle1=rand()%14;
+//		nextY2=rand()%7;
+//		nextAngle2=rand()%14;
 	}
 }
