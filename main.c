@@ -26,6 +26,7 @@ static struct Magnet magnet;
 osThreadDef(thread, osPriorityNormal, 1, 0);
 
 uint8_t state, buffer_space;
+uint8_t data[4];
 
 /*!
  @brief Program entry point
@@ -41,11 +42,11 @@ int main (void) {
 	init_robot(&robot, &boomServo, &crowdServo, &swingServo);
 	init_magnet(&magnet, RCC_AHB1Periph_GPIOD, GPIOD, GPIO_Pin_15);
 	
-	tid_thread = osThreadCreate(osThread(thread), NULL);
-	
 	CC2500_config_transmitter();
 	
 	goToRX(&state, &buffer_space);
+	
+	tid_thread = osThreadCreate(osThread(thread), NULL);
 	
 	osDelay(osWaitForever);
 }
@@ -53,7 +54,7 @@ int main (void) {
 void thread (void const *argument) {
 	parkRobot(&robot);
 	osDelay(1000);
-	uint8_t data[4];
+
 //	uint32_t prevY1=0, prevAngle1=0, nextY1=rand()%7, nextAngle1=rand()%14;
 //	uint32_t prevY2=0, prevAngle2=0, nextY2=rand()%7, nextAngle2=rand()%14;
 	while(1) {
@@ -88,5 +89,6 @@ void thread (void const *argument) {
 //		nextAngle1=rand()%14;
 //		nextY2=rand()%7;
 //		nextAngle2=rand()%14;
+osDelay(10);
 	}
 }

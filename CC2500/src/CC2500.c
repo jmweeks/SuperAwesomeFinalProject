@@ -501,16 +501,39 @@ void wireless_TX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffe
 }
 
 void wireless_RX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffer_space) {
-	if (length > 12) {
-		length = 12;
-	}
-	CC2500_StrobeSend(SNOP_R,state,buffer_space);	
-	osDelay(1000);
-	while (*buffer_space < length){
+	uint8_t i=0;
+	uint8_t temp_data=0;
+	
+//	if (length > 12) {
+//		length = 12;
+//	}
+//	CC2500_StrobeSend(SNOP_R,state,buffer_space);	
+//	osDelay(1000);
+//	while (*buffer_space < length){
+//		CC2500_StrobeSend(SNOP_R,state,buffer_space);	
+//	}
+//	
+//	osDelay(1000);
+	//CC2500_Read(data, 0x3F, 1);
+//	osDelay(1000);
+	
+	while (i<length) {
 		CC2500_StrobeSend(SNOP_R,state,buffer_space);	
+
+		
+		if (*buffer_space>0) {
+			CC2500_Read(&temp_data, 0x3F, 1);
+			
+				if ((temp_data&0xF0)==0xF0) {
+					data[0]=temp_data&0x0F;
+					i=1;
+				}else if (i>0) {
+					data[i]=temp_data;
+					i++;
+				}
+		}
+		osDelay(10);
 	}
-	osDelay(1000);
-	CC2500_Read(data, 0x3F, length);
-	osDelay(1000);
+	
 	CC2500_StrobeSend(SNOP_R,state,buffer_space);	
 }
