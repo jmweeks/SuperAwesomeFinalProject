@@ -89,6 +89,6 @@ void thread (void const *argument) {
 //		nextAngle1=rand()%14;
 //		nextY2=rand()%7;
 //		nextAngle2=rand()%14;
-osDelay(10);
+osDelay(SYSTEM_DELAY);
 	}
 }

@@ -140,21 +140,23 @@ void init_robot(struct Robot *robot, struct Servo *boomServo, struct Servo *crow
 }
 
 void moveRobot(struct Robot *robot, uint32_t positionY, uint32_t positionZ, uint32_t angle) {
-	robot->positionY = positionY;
-	robot->positionZ = positionZ;
-	robot->angle = angle;
-	
-	updateRobotPosition(robot);
-	
-	moveServo(robot->boomServo, robot->boomServo->maxPosition);
-	waitUntilServoStopped(robot->boomServo);
-	
-	moveServo(robot->crowdServo, robot->crowdPosition);
-	moveServo(robot->swingServo, robot->swingPosition);
-	waitUntilRobotStopped(robot);
-	
-	moveServo(robot->boomServo, robot->boomPosition);
-	waitUntilServoStopped(robot->boomServo);
+	if (robot->positionY != positionY || robot->positionZ != positionZ || robot->angle != angle) {
+		robot->positionY = positionY;
+		robot->positionZ = positionZ;
+		robot->angle = angle;
+		
+		updateRobotPosition(robot);
+		
+		moveServo(robot->boomServo, robot->boomServo->maxPosition);
+		waitUntilServoStopped(robot->boomServo);
+		
+		moveServo(robot->crowdServo, robot->crowdPosition);
+		moveServo(robot->swingServo, robot->swingPosition);
+		waitUntilRobotStopped(robot);
+		
+		moveServo(robot->boomServo, robot->boomPosition);
+		waitUntilServoStopped(robot->boomServo);
+	}
 }
 
 void floatRobot(struct Robot *robot) {

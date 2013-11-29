@@ -503,6 +503,8 @@ void wireless_TX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffe
 void wireless_RX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffer_space) {
 	uint8_t i=0;
 	uint8_t temp_data=0;
+	uint8_t raw_data[12];
+	int j;
 	
 //	if (length > 12) {
 //		length = 12;
@@ -517,23 +519,44 @@ void wireless_RX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffe
 	//CC2500_Read(data, 0x3F, 1);
 //	osDelay(1000);
 	
-	while (i<length) {
+//	CC2500_StrobeSend(SFRX_R,state,buffer_space);
+//	osDelay(SYSTEM_DELAY);
+	CC2500_StrobeSend(SRX_R,state,buffer_space);
+	osDelay(SYSTEM_DELAY);
+	
+	while (i<(12)) {
 		CC2500_StrobeSend(SNOP_R,state,buffer_space);	
 
 		
 		if (*buffer_space>0) {
 			CC2500_Read(&temp_data, 0x3F, 1);
+			//temp_data = ((raw_data[0]&0x0F&raw_data[1]) | (raw_data[0]&0x0F&raw_data[2]) | (raw_data[2]&raw_data[1]));
 			
 				if ((temp_data&0xF0)==0xF0) {
-					data[0]=temp_data&0x0F;
+					raw_data[0]=temp_data&0x0F;
+					//data[0]=temp_data&0x0F;
 					i=1;
 				}else if (i>0) {
-					data[i]=temp_data;
+					raw_data[i]=temp_data;
+					//data[i]=temp_data;
 					i++;
 				}
 		}
-		osDelay(10);
+		if(*state == 0x60){
+			CC2500_StrobeSend(SFRX_R,state,buffer_space);
+			osDelay(SYSTEM_DELAY);
+			CC2500_StrobeSend(SRX_R,state,buffer_space);
+			i=0;
+		}
+		
+		osDelay(SYSTEM_DELAY);
+	}
+	for(j=0;j<4;j++){
+		data[j] = ((raw_data[3*j]&raw_data[3*j+1]) | (raw_data[3*j]&raw_data[3*j+2]) | (raw_data[3*j+2]&raw_data[3*j+1]));
 	}
 	
-	CC2500_StrobeSend(SNOP_R,state,buffer_space);	
+	CC2500_StrobeSend(SIDLE_R,state,buffer_space);
+		osDelay(SYSTEM_DELAY);
+	CC2500_StrobeSend(SNOP_R,state,buffer_space);
+	//osDelay(SYSTEM_DELAY);	
 }

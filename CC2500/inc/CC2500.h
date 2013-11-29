@@ -13,6 +13,11 @@
  #include "stm32f4xx.h"
  #include "stm32f4xx_conf.h"
 
+/* Define delays ------------------------------------------------------------*/
+
+
+#define SYSTEM_DELAY 10
+
 
 /* CC2500 structs */
 
