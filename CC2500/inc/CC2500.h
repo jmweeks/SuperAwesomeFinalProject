@@ -13,11 +13,6 @@
  #include "stm32f4xx.h"
  #include "stm32f4xx_conf.h"
 
-/* Define delays ------------------------------------------------------------*/
-
-
-#define SYSTEM_DELAY 10
-
 
 /* CC2500 structs */
 
@@ -428,6 +423,10 @@ Bit 		Field Name 			Description
 #define SWORRST_R				0xBC
 #define SNOP_R					0xBD
 
+#define FIFO_REG				0x3F
+
+#define STROBE_DELAY		10
+
 
 
 
@@ -450,7 +449,7 @@ Bit 		Field Name 			Description
 void CC2500_Init(void);
 void CC2500_Write(uint8_t* pBuffer, uint8_t WriteAddr, uint16_t NumByteToWrite);
 void CC2500_Read(uint8_t* pBuffer, uint8_t ReadAddr, uint16_t NumByteToRead);
-void CC2500_config_transmitter();
+void CC2500_config_transmitter(void);
 void CC2500_StrobeSend(uint8_t cmd, uint8_t* state, uint8_t* buffer_space);
 
 void goToTX(uint8_t *state, uint8_t *buffer_space);

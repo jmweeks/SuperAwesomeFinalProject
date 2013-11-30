@@ -31,18 +31,8 @@ static uint8_t CC2500_SendByte(uint8_t byte);
   */
 void CC2500_Init()
 {
-  uint8_t ctrl = 0x00;
-  
   /* Configure the low level interface ---------------------------------------*/
   CC2500_LowLevel_Init();
-  
-  /* Configure MEMS: data rate, power mode, full scale, self test and axes 
-  ctrl = (uint8_t) (LIS302DL_InitStruct->Output_DataRate | LIS302DL_InitStruct->Power_Mode | \
-                    LIS302DL_InitStruct->Full_Scale | LIS302DL_InitStruct->Self_Test | \
-                    LIS302DL_InitStruct->Axes_Enable);
-  
-
-  LIS302DL_Write(&ctrl, LIS302DL_CTRL_REG1_ADDR, 1);  */
 }
 
 
@@ -464,40 +454,54 @@ uint32_t CC2500_TIMEOUT_UserCallback(void)
 
 void goToTX(uint8_t *state, uint8_t *buffer_space) {
 	CC2500_StrobeSend(SIDLE_T,state,buffer_space);
- 	osDelay(1000);
+ 	osDelay(STROBE_DELAY);
 	
-	CC2500_StrobeSend(SCAL_R,state,buffer_space);
-	osDelay(1000);
+	CC2500_StrobeSend(SCAL_T,state,buffer_space);
+	osDelay(STROBE_DELAY);
 	
  	CC2500_StrobeSend(STX_T,state,buffer_space);
- 	osDelay(1000);
+ 	osDelay(STROBE_DELAY);
 
  	CC2500_StrobeSend(SNOP_T,state,buffer_space);
+	osDelay(STROBE_DELAY);
 }
 
 void goToRX(uint8_t *state, uint8_t *buffer_space) {
 	CC2500_StrobeSend(SIDLE_R,state,buffer_space);
-	osDelay(1000);
+	osDelay(STROBE_DELAY);
 	
 	CC2500_StrobeSend(SFRX_R,state,buffer_space);
-	osDelay(1000);
+	osDelay(STROBE_DELAY);
 	
 	CC2500_StrobeSend(SIDLE_R,state,buffer_space);
-	osDelay(1000);
+	osDelay(STROBE_DELAY);
 	
 	CC2500_StrobeSend(SCAL_R,state,buffer_space);
-	osDelay(1000);
+	osDelay(STROBE_DELAY);
 
 	CC2500_StrobeSend(SRX_R,state,buffer_space);
-	osDelay(1000);
+	osDelay(STROBE_DELAY);
+	
 	CC2500_StrobeSend(SNOP_R,state,buffer_space);
+	osDelay(STROBE_DELAY);
 }
 
 void wireless_TX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffer_space) {
-	CC2500_Write(data, 0x3F, length);
-	osDelay(1000);
-	CC2500_StrobeSend(SNOP_R,state,buffer_space);	
-	osDelay(1000);
+	uint8_t tripleData[length*3];
+	uint32_t i;
+	
+	for (i=0; i<length; i++) {
+		tripleData[3*i] = data[i] | ((3*i)<<4);
+		tripleData[3*i+1] = data[i] | ((3*i+1)<<4);
+		tripleData[3*i+2] = data[i] | ((3*i+2)<<4);
+	}
+
+	tripleData[0] = tripleData[0] | 0xF0;
+	CC2500_Write(tripleData, FIFO_REG, length*3);
+	osDelay(STROBE_DELAY);
+	
+	CC2500_StrobeSend(SNOP_T,state,buffer_space);	
+	osDelay(STROBE_DELAY);
 }
 
 void wireless_RX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffer_space) {
@@ -506,23 +510,8 @@ void wireless_RX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffe
 	uint8_t raw_data[12];
 	int j;
 	
-//	if (length > 12) {
-//		length = 12;
-//	}
-//	CC2500_StrobeSend(SNOP_R,state,buffer_space);	
-//	osDelay(1000);
-//	while (*buffer_space < length){
-//		CC2500_StrobeSend(SNOP_R,state,buffer_space);	
-//	}
-//	
-//	osDelay(1000);
-	//CC2500_Read(data, 0x3F, 1);
-//	osDelay(1000);
-	
-//	CC2500_StrobeSend(SFRX_R,state,buffer_space);
-//	osDelay(SYSTEM_DELAY);
 	CC2500_StrobeSend(SRX_R,state,buffer_space);
-	osDelay(SYSTEM_DELAY);
+	osDelay(STROBE_DELAY);
 	
 	while (i<(12)) {
 		CC2500_StrobeSend(SNOP_R,state,buffer_space);	
@@ -530,33 +519,27 @@ void wireless_RX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffe
 		
 		if (*buffer_space>0) {
 			CC2500_Read(&temp_data, 0x3F, 1);
-			//temp_data = ((raw_data[0]&0x0F&raw_data[1]) | (raw_data[0]&0x0F&raw_data[2]) | (raw_data[2]&raw_data[1]));
-			
-				if ((temp_data&0xF0)==0xF0) {
-					raw_data[0]=temp_data&0x0F;
-					//data[0]=temp_data&0x0F;
-					i=1;
-				}else if (i>0) {
-					raw_data[i]=temp_data;
-					//data[i]=temp_data;
+			if ((temp_data&0xF0)==0xF0) {
+				raw_data[0]=temp_data&0x0F;
+				i=1;
+			} else if (i>0) {
+				if ((temp_data&0xF0)==i<<4) {
+					raw_data[i]=temp_data&0x0F;
 					i++;
+				} else {
+					i=0;
 				}
-		}
-		if(*state == 0x60){
-			CC2500_StrobeSend(SFRX_R,state,buffer_space);
-			osDelay(SYSTEM_DELAY);
-			CC2500_StrobeSend(SRX_R,state,buffer_space);
-			i=0;
+			}
 		}
 		
-		osDelay(SYSTEM_DELAY);
+		osDelay(STROBE_DELAY);
 	}
 	for(j=0;j<4;j++){
 		data[j] = ((raw_data[3*j]&raw_data[3*j+1]) | (raw_data[3*j]&raw_data[3*j+2]) | (raw_data[3*j+2]&raw_data[3*j+1]));
 	}
 	
 	CC2500_StrobeSend(SIDLE_R,state,buffer_space);
-		osDelay(SYSTEM_DELAY);
+	osDelay(STROBE_DELAY);
 	CC2500_StrobeSend(SNOP_R,state,buffer_space);
-	//osDelay(SYSTEM_DELAY);	
+	osDelay(STROBE_DELAY);	
 }
