@@ -62,7 +62,13 @@ struct Robot {
 	uint32_t swingPosition;
 };
 
-void init_robot(struct Robot *robot, struct Servo *boomServo, struct Servo *crowdServo, struct Servo *swingServo);
+struct RobotInit {
+	struct Servo *boomServo;
+	struct Servo *crowdServo;
+	struct Servo *swingServo;
+};
+
+void init_robot(struct Robot *robot, struct RobotInit *robotInit);
 void moveRobot(struct Robot *robot, uint32_t positionY, uint32_t positionZ, uint32_t angle);
 void waitUntilRobotStopped(struct Robot *robot);
 void floatRobot(struct Robot *robot);

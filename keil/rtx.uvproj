@@ -448,21 +448,6 @@
               <FilePath>.\src\project_pwm.c</FilePath>
             </File>
             <File>
-              <FileName>project_accelerometer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\project_accelerometer.c</FilePath>
-            </File>
-            <File>
-              <FileName>project_filter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\project_filter.c</FilePath>
-            </File>
-            <File>
-              <FileName>project_lcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\src\project_lcd.c</FilePath>
-            </File>
-            <File>
               <FileName>project_magnet.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\project_magnet.c</FilePath>
@@ -471,6 +456,11 @@
               <FileName>project_robot.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\project_robot.c</FilePath>
+            </File>
+            <File>
+              <FileName>project_receiver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\project_receiver.c</FilePath>
             </File>
           </Files>
         </Group>

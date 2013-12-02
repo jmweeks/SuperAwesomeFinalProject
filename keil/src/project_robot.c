@@ -125,10 +125,10 @@ void waitUntilRobotStopped(struct Robot *robot) {
 	waitUntilServoStopped(robot->swingServo);
 }
 
-void init_robot(struct Robot *robot, struct Servo *boomServo, struct Servo *crowdServo, struct Servo *swingServo) {
-	robot->boomServo = boomServo;
-	robot->crowdServo = crowdServo;
-	robot->swingServo = swingServo;
+void init_robot(struct Robot *robot, struct RobotInit *robotInit) {
+	robot->boomServo = robotInit->boomServo;
+	robot->crowdServo = robotInit->crowdServo;
+	robot->swingServo = robotInit->swingServo;
 	
 	robot->boomPosition = robot->boomServo->minPosition;
 	robot->crowdPosition = robot->crowdServo->minPosition;

@@ -2,10 +2,10 @@
 
 #include "project_magnet.h"
 
-void init_magnet(struct Magnet *magnet, uint32_t periph, GPIO_TypeDef *GPIOx, uint16_t pin) {
-	magnet->GPIO = GPIOx;
-	magnet->periph = periph;
-	magnet->pin = pin;
+void init_magnet(struct Magnet *magnet, struct MagnetInit *magnetInit) {
+	magnet->GPIO = magnetInit->GPIOx;
+	magnet->periph = magnetInit->periph;
+	magnet->pin = magnetInit->pin;
 	magnet->isOn = 0;
 	
 	RCC_AHB1PeriphClockCmd(magnet->periph, ENABLE);																			//Enable clock to GPIOD

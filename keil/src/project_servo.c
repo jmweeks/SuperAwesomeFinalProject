@@ -27,23 +27,23 @@ static void update_position(struct Servo *servo, uint32_t position) {
 	servo->realPosition = position;
 }
 
-void init_servo(struct Servo *servo, uint32_t CCR, uint32_t maxPosition, uint32_t minPosition) {
-	servo->CCR = CCR;
+void init_servo(struct Servo *servo, struct ServoInit *servoInit) {
+	servo->CCR = servoInit->CCR;
 	
-	if (maxPosition > SERVO_MAX_POSITION) {
+	if (servoInit->maxPosition > SERVO_MAX_POSITION) {
 		servo->maxPosition = SERVO_MAX_POSITION;
-	} else if (maxPosition < SERVO_MIN_POSITION) {
+	} else if (servoInit->maxPosition < SERVO_MIN_POSITION) {
 		servo->maxPosition = SERVO_MIN_POSITION;
 	} else {
-		servo->maxPosition = maxPosition;
+		servo->maxPosition = servoInit->maxPosition;
 	}
 	
-	if (minPosition > servo->maxPosition) {
+	if (servoInit->minPosition > servo->maxPosition) {
 		servo->minPosition = servo->maxPosition;
-	} else if (minPosition < SERVO_MIN_POSITION) {
+	} else if (servoInit->minPosition < SERVO_MIN_POSITION) {
 		servo->minPosition = SERVO_MIN_POSITION;
 	} else {
-		servo->minPosition = minPosition;
+		servo->minPosition = servoInit->minPosition;
 	}
 	
 	servo->position = (servo->maxPosition+servo->minPosition)/2;

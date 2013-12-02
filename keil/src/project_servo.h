@@ -27,9 +27,15 @@ struct Servo {
 	osMutexId mutexID;
 };
 
+struct ServoInit {
+	uint32_t CCR;
+	uint32_t maxPosition;
+	uint32_t minPosition;
+};
+
 #endif
 
-void init_servo(struct Servo *servo, uint32_t CCR, uint32_t maxPosition, uint32_t minPosition);
+void init_servo(struct Servo *servo, struct ServoInit *servoInit);
 void moveServo(struct Servo *servo, uint32_t position);
 void servoThread(void const *argument);
 void waitUntilServoStopped(struct Servo *servo);

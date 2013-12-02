@@ -1,6 +1,8 @@
 #include "CC2500.h"
 #include "cmsis_os.h"
 
+#include "project_receiver.h"
+
 /** @defgroup STM32F4_DISCOVERY_CC2500_Private_Defines
   * @{
   */
@@ -479,11 +481,11 @@ void goToRX(uint8_t *state, uint8_t *buffer_space) {
 	CC2500_StrobeSend(SCAL_R,state,buffer_space);
 	osDelay(STROBE_DELAY);
 
-	CC2500_StrobeSend(SRX_R,state,buffer_space);
-	osDelay(STROBE_DELAY);
+	//CC2500_StrobeSend(SRX_R,state,buffer_space);
+	//osDelay(STROBE_DELAY);
 	
-	CC2500_StrobeSend(SNOP_R,state,buffer_space);
-	osDelay(STROBE_DELAY);
+	//CC2500_StrobeSend(SNOP_R,state,buffer_space);
+	//osDelay(STROBE_DELAY);
 }
 
 void wireless_TX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffer_space) {
@@ -504,20 +506,19 @@ void wireless_TX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffe
 	osDelay(STROBE_DELAY);
 }
 
-void wireless_RX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffer_space) {
+void wireless_RX(struct Receiver *receiver) {
 	uint8_t i=0;
 	uint8_t temp_data=0;
-	uint8_t raw_data[12];
-	int j;
+	uint8_t raw_data[sizeof(receiver->data)/sizeof(receiver->data[0]) * 3];
 	
-	CC2500_StrobeSend(SRX_R,state,buffer_space);
+	CC2500_StrobeSend(SRX_R,&(receiver->state),&(receiver->buffer_space));
 	osDelay(STROBE_DELAY);
 	
-	while (i<(12)) {
-		CC2500_StrobeSend(SNOP_R,state,buffer_space);	
+	while (i<(sizeof(receiver->data)/sizeof(receiver->data[0]) * 3)) {
+		CC2500_StrobeSend(SNOP_R,&(receiver->state),&(receiver->buffer_space));	
 
 		
-		if (*buffer_space>0) {
+		if (receiver->buffer_space>0) {
 			CC2500_Read(&temp_data, 0x3F, 1);
 			if ((temp_data&0xF0)==0xF0) {
 				raw_data[0]=temp_data&0x0F;
@@ -534,12 +535,15 @@ void wireless_RX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffe
 		
 		osDelay(STROBE_DELAY);
 	}
-	for(j=0;j<4;j++){
-		data[j] = ((raw_data[3*j]&raw_data[3*j+1]) | (raw_data[3*j]&raw_data[3*j+2]) | (raw_data[3*j+2]&raw_data[3*j+1]));
-	}
 	
-	CC2500_StrobeSend(SIDLE_R,state,buffer_space);
+	osMutexWait(receiver->mutexID, osWaitForever);
+	for(uint32_t j=0;j<sizeof(receiver->data)/sizeof(receiver->data[0]);j++){
+		receiver->data[j] = ((raw_data[3*j]&raw_data[3*j+1]) | (raw_data[3*j]&raw_data[3*j+2]) | (raw_data[3*j+2]&raw_data[3*j+1]));
+	}
+	osMutexRelease(receiver->mutexID);
+	
+	CC2500_StrobeSend(SIDLE_R,&(receiver->state),&(receiver->buffer_space));
 	osDelay(STROBE_DELAY);
-	CC2500_StrobeSend(SNOP_R,state,buffer_space);
+	CC2500_StrobeSend(SNOP_R,&(receiver->state),&(receiver->buffer_space));
 	osDelay(STROBE_DELAY);	
 }
