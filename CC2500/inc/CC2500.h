@@ -10,11 +10,15 @@
 #ifndef CC2500
 #define CC2500
 
- #include "stm32f4xx.h"
- #include "stm32f4xx_conf.h"
- #include "cmsis_os.h"
+#include "stm32f4xx.h"
+#include "stm32f4xx_conf.h"
+#include "cmsis_os.h"
  
- #include "project_receiver.h"
+#include "stm32f4xx.h"
+#include "stm32f4xx_conf.h"
+
+#include "project_receiver.h"
+#include "project_transmitter.h"
 
 
 /* CC2500 structs */
@@ -457,7 +461,7 @@ void CC2500_StrobeSend(uint8_t cmd, uint8_t* state, uint8_t* buffer_space);
 
 void goToTX(uint8_t *state, uint8_t *buffer_space);
 void goToRX(uint8_t *state, uint8_t *buffer_space);
-void wireless_TX(uint8_t data[], uint32_t length, uint8_t *state, uint8_t *buffer_space);
+void wireless_TX(struct Transmitter *transmitter);
 void wireless_RX(struct Receiver *receiver);
 	
 	/* USER Callbacks: This is function for which prototype only is declared in
