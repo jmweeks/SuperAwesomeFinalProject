@@ -1,9 +1,18 @@
+/*!
+	@file project_init.c
+	File that initializes the LEDs on the receiver.
+*/
 #include "stm32f4xx.h"
 
 #include "project_init.h"
 
 //LEDS
 
+/**  
+  * @brief  Function that initializes the LED pins to be driven by the TIM4 PWM function. 
+  * @param  None  
+  * @retval None  
+  */
 void init_LEDS_PWM() {
 	GPIO_InitTypeDef GPIO_InitStructure;
 
@@ -22,6 +31,11 @@ void init_LEDS_PWM() {
   GPIO_PinAFConfig(GPIOD, GPIO_PinSource15, GPIO_AF_TIM4); 
 }
 
+/**  
+  * @brief  Function that initializes the LED pins. 
+  * @param  None  
+  * @retval None  
+  */
 void init_LEDS() {
 	GPIO_InitTypeDef GPIO_InitStructure;
 

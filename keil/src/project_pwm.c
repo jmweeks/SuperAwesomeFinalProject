@@ -1,3 +1,7 @@
+/*!
+	@file project_pwm.c
+	Source file for the PWM functionality.
+*/
 #include "stm32f4xx.h"
 #include "cmsis_os.h"
 
@@ -6,6 +10,11 @@
 
 //For PWM
 
+/**  
+  * @brief  Function that initializes TIM4 peripheral timer used for PWM.
+  * @param  None  
+  * @retval None  
+  */
 void init_TIM4(uint32_t period, uint32_t frequency) {
 	
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;

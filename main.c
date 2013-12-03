@@ -1,3 +1,7 @@
+/*!
+	@file main.c
+	Main file of the receiver project. 
+*/
 #include "arm_math.h"
 
 #include "stm32f4xx.h"
@@ -77,6 +81,12 @@ int main (void) {
 	osDelay(osWaitForever);
 }
 
+
+/*!
+ @brief Thread that controls movement of arm and magnet state.
+ @param argument Unused
+ @retval None.
+ */
 void armThread (void const *argument) {
 	uint8_t data[RECEIVE_DATA_SIZE];
 
@@ -128,6 +138,11 @@ void armThread (void const *argument) {
 	}
 }
 
+/*!
+ @brief Thread that controls the LEDs along the arm. 
+ @param *argument Unused
+ @retval None
+ */
 void ledThread (void const *argument) {
 	uint32_t led = 0;
 	uint32_t delay = 0;
