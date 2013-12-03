@@ -2,6 +2,7 @@
 #include <math.h>
 
 #include "project_robot.h"
+#include "project_init.h"
 
 static void updateRobotPosition(struct Robot *robot) {
 	if (robot->positionY < POSITION_Y_MIN) {
@@ -166,5 +167,10 @@ void floatRobot(struct Robot *robot) {
 }
 
 void parkRobot(struct Robot *robot) {
+	if (robot->positionY == PARK_Y && robot->positionZ == PARK_Z && robot->swingPosition == PARK_ANGLE) {
+		robot->positionY = 1;
+		robot->positionZ = 1;
+		robot->angle = 1;
+	}
 	moveRobot(robot, PARK_Y, PARK_Z, PARK_ANGLE);
 }

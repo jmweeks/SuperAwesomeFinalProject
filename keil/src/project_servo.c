@@ -46,8 +46,8 @@ void init_servo(struct Servo *servo, struct ServoInit *servoInit) {
 		servo->minPosition = servoInit->minPosition;
 	}
 	
-	servo->position = (servo->maxPosition+servo->minPosition)/2;
-	servo->realPosition = (servo->maxPosition+servo->minPosition)/2;
+	servo->position = servoInit->startingPosition;
+	servo->realPosition = servoInit->startingPosition;
 	
 	osThreadDef(servoThread, osPriorityNormal, 1, 0);
 	servo->threadID = osThreadCreate(osThread(servoThread), servo);

@@ -13,8 +13,11 @@ struct Receiver {
 	uint8_t buffer_space;
 	uint8_t data[RECEIVE_DATA_SIZE];
 	osMutexId mutexID;
+	osThreadId threadID;
 };
 
 #endif
 
-void init_receiver(struct Receiver *receiver);
+void init_receiver(struct Receiver *receiver, osThreadId **threadID);
+void currentData(struct Receiver *receiver, uint8_t data[]);
+void receiverThread(void const *argument);

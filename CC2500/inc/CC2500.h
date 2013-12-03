@@ -434,6 +434,8 @@ Bit 		Field Name 			Description
 
 #define STROBE_DELAY		10
 
+#define MODULUS_REDUNDANCY 3
+
 
 
 

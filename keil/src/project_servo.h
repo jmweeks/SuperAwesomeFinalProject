@@ -31,6 +31,7 @@ struct ServoInit {
 	uint32_t CCR;
 	uint32_t maxPosition;
 	uint32_t minPosition;
+	uint32_t startingPosition;
 };
 
 #endif
